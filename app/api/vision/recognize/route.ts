@@ -7,6 +7,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+interface FundRecognitionResult {
+  fundCode: string | null;
+  fundName: string | null;
+  nav: string | null;
+  change: string | null;
+  type: string | null;
+  confidence: number;
+}
+
 /**
  * POST /api/vision/recognize
  *
@@ -72,7 +81,7 @@ export async function POST(request: NextRequest) {
 4. 涨跌幅
 5. 基金类型
 
-请以JSON格式返回：
+请以JSON格式返回，只返回JSON对象本身，不要有其他文字：
 {
   "fundCode": "000001",
   "fundName": "华夏成长混合",
@@ -95,7 +104,6 @@ confidence 是识别的置信度 (0-1)。
             ],
           },
         ],
-        response_format: { type: 'json_object' },
         temperature: 0.1,
         max_tokens: 500,
       }),
@@ -104,32 +112,89 @@ confidence 是识别的置信度 (0-1)。
     if (!response.ok) {
       const errorText = await response.text();
       console.error('GLM-4V API error:', errorText);
+
+      // 尝试解析错误信息
+      let errorMsg = 'Failed to recognize image';
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMsg = errorData.error?.message || errorData.message || errorMsg;
+      } catch (e) {
+        // 如果无法解析，使用原始错误文本
+        if (errorText.includes('401') || errorText.includes('Unauthorized')) {
+          errorMsg = 'API Key 无效或未配置，请检查 ZHIPU_API_KEY';
+        } else if (errorText.includes('429')) {
+          errorMsg = 'API 调用次数超限，请稍后重试';
+        } else if (errorText.includes('400')) {
+          errorMsg = '图片格式不支持或图片损坏';
+        }
+      }
+
       return NextResponse.json(
-        { error: 'Failed to recognize image', details: errorText },
+        { error: errorMsg, details: errorText },
         { status: 500 }
       );
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content;
+    const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
+      console.error('No content in response:', data);
       return NextResponse.json(
-        { error: 'No recognition result returned' },
+        { error: 'No recognition result returned', details: 'API 返回了空结果' },
         { status: 500 }
       );
     }
 
-    const result = JSON.parse(content);
+    // 尝试解析 JSON 结果
+    let result: FundRecognitionResult;
+    try {
+      // 清理可能的 markdown 代码块标记
+      const cleanedContent = content
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
+
+      result = JSON.parse(cleanedContent);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', content);
+
+      // 如果 JSON 解析失败，尝试从文本中提取信息
+      const fundCodeMatch = content.match(/基金代码[：:]\s*(\d{6})/);
+      const fundNameMatch = content.match(/基金名称[：:]\s*([^\n]+)/);
+      const navMatch = content.match(/净值[：:]\s*([\d.]+)/);
+      const changeMatch = content.match(/涨跌幅[：:]\s*([+\-\d.]+%?)/);
+
+      result = {
+        fundCode: fundCodeMatch?.[1] || null,
+        fundName: fundNameMatch?.[1]?.trim() || null,
+        nav: navMatch?.[1] || null,
+        change: changeMatch?.[1] || null,
+        type: null,
+        confidence: fundCodeMatch ? 0.7 : 0.3,
+      };
+    }
+
+    // 验证必要字段
+    if (!result.fundCode) {
+      return NextResponse.json(
+        {
+          error: '无法识别基金代码',
+          message: '请上传更清晰的基金截图，确保基金代码可见',
+          rawResponse: content
+        },
+        { status: 200 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
       data: {
         fundCode: result.fundCode,
-        fundName: result.fundName,
-        nav: result.nav,
-        change: result.change,
-        type: result.type,
+        fundName: result.fundName || null,
+        nav: result.nav || null,
+        change: result.change || null,
+        type: result.type || null,
         confidence: result.confidence || 0.8,
       },
     });
