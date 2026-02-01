@@ -28,10 +28,14 @@ interface EnhancedAIChatProps {
 export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [showConfigNotice, setShowConfigNotice] = useState(false);
   const [apiConfigured, setApiConfigured] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 窗口尺寸状态：'normal' | 'minimized' | 'maximized' | 'fullscreen'
+  const [windowSize, setWindowSize] = useState<'normal' | 'minimized' | 'maximized' | 'fullscreen'>('normal');
 
   // 聊天历史管理
   const {
@@ -484,21 +488,24 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
         <div
           className="ai-chat-window enhanced"
           style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-            width: isMinimized ? '340px' : '520px',
-            maxWidth: 'calc(100vw - 48px)',
-            height: isMinimized ? '60px' : '700px',
-            maxHeight: 'calc(100vh - 48px)',
+            position: windowSize === 'fullscreen' ? 'fixed' : 'fixed',
+            top: windowSize === 'fullscreen' ? 0 : 'auto',
+            left: windowSize === 'fullscreen' ? 0 : 'auto',
+            bottom: windowSize === 'fullscreen' ? 0 : '24px',
+            right: windowSize === 'fullscreen' ? 0 : '24px',
+            width: windowSize === 'fullscreen' ? '100vw' : windowSize === 'maximized' ? 'calc(100vw - 48px)' : windowSize === 'minimized' ? '340px' : '520px',
+            maxWidth: windowSize === 'fullscreen' ? '100vw' : windowSize === 'maximized' ? 'calc(100vw - 48px)' : 'calc(100vw - 48px)',
+            height: windowSize === 'fullscreen' ? '100vh' : windowSize === 'maximized' ? 'calc(100vh - 48px)' : windowSize === 'minimized' ? '60px' : '700px',
+            maxHeight: windowSize === 'fullscreen' ? '100vh' : windowSize === 'maximized' ? 'calc(100vh - 48px)' : 'calc(100vh - 48px)',
             background: '#111827',
-            border: '1px solid #1f2937',
-            borderRadius: '16px',
+            border: windowSize === 'fullscreen' ? 'none' : '1px solid #1f2937',
+            borderRadius: windowSize === 'fullscreen' ? '0' : '16px',
             display: 'flex',
             flexDirection: 'column',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-            zIndex: 100,
+            boxShadow: windowSize === 'fullscreen' ? 'none' : '0 20px 60px rgba(0,0,0,0.5)',
+            zIndex: windowSize === 'fullscreen' ? 9999 : 100,
             overflow: 'hidden',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           {/* 头部 */}
@@ -534,8 +541,88 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
+              {/* 全屏切换按钮 */}
+              {windowSize !== 'minimized' && (
+                <button
+                  onClick={() => {
+                    if (windowSize === 'fullscreen') {
+                      setWindowSize('normal');
+                    } else {
+                      setWindowSize('fullscreen');
+                    }
+                  }}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: '#9ca3af',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  title={windowSize === 'fullscreen' ? '退出全屏' : '全屏'}
+                >
+                  {windowSize === 'fullscreen' ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                    </svg>
+                  )}
+                </button>
+              )}
+
+              {/* 最大化/还原按钮 */}
+              {windowSize !== 'minimized' && windowSize !== 'fullscreen' && (
+                <button
+                  onClick={() => {
+                    if (windowSize === 'maximized') {
+                      setWindowSize('normal');
+                    } else {
+                      setWindowSize('maximized');
+                    }
+                  }}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: '#9ca3af',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  title={windowSize === 'maximized' ? '还原' : '最大化'}
+                >
+                  {windowSize === 'maximized' ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="4" y="4" width="14" height="14" rx="2" />
+                      <path d="M15 15l5 5M20 15v5M15 20h5" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                  )}
+                </button>
+              )}
+
+              {/* 最小化/展开按钮 */}
               <button
-                onClick={() => setIsMinimized(!isMinimized)}
+                onClick={() => {
+                  if (windowSize === 'minimized') {
+                    setWindowSize('normal');
+                  } else {
+                    setWindowSize('minimized');
+                  }
+                }}
                 style={{
                   width: '32px',
                   height: '32px',
@@ -548,16 +635,18 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                title={isMinimized ? '展开' : '最小化'}
+                title={windowSize === 'minimized' ? '展开' : '最小化'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  {isMinimized ? (
+                  {windowSize === 'minimized' ? (
                     <path d="M5 15l7-7 7 7-7" />
                   ) : (
                     <path d="M19 9l-7 7-7-7" />
                   )}
                 </svg>
               </button>
+
+              {/* 关闭按钮 */}
               <button
                 onClick={() => setIsOpen(false)}
                 style={{
@@ -624,12 +713,12 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
           </div>
 
           {/* 消息列表 */}
-          {!isMinimized && (
+          {windowSize !== 'minimized' && (
             <div
               style={{
                 flex: 1,
                 overflowY: 'auto',
-                padding: '16px',
+                padding: windowSize === 'fullscreen' ? '24px' : '16px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '16px',
@@ -639,11 +728,11 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
                 <div style={{
                   textAlign: 'center',
                   color: '#9ca3af',
-                  padding: '40px 20px'
+                  padding: windowSize === 'fullscreen' ? '80px 40px' : '40px 20px'
                 }}>
-                  <div style={{ fontSize: '24px', marginBottom: '12px' }}>👋</div>
-                  <div style={{ fontSize: '14px', marginBottom: '8px' }}>开始新的对话</div>
-                  <div style={{ fontSize: '12px' }}>试试问我关于基金投资的问题</div>
+                  <div style={{ fontSize: windowSize === 'fullscreen' ? '48px' : '24px', marginBottom: '12px' }}>👋</div>
+                  <div style={{ fontSize: windowSize === 'fullscreen' ? '18px' : '14px', marginBottom: '8px' }}>开始新的对话</div>
+                  <div style={{ fontSize: windowSize === 'fullscreen' ? '14px' : '12px' }}>试试问我关于基金投资的问题</div>
                 </div>
               ) : (
                 currentMessages.map((message) => (
@@ -652,7 +741,7 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      maxWidth: message.role === 'user' ? '80%' : '100%',
+                      maxWidth: message.role === 'user' ? (windowSize === 'fullscreen' ? '60%' : '80%') : '100%',
                       alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
                     }}
                   >
@@ -713,7 +802,7 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
           )}
 
           {/* 智能建议 */}
-          {!isMinimized && currentMessages.length <= 1 && (
+          {windowSize !== 'minimized' && currentMessages.length <= 1 && (
             <SmartSuggestions
               funds={funds}
               onSelectSuggestion={handleSuggestionClick}
@@ -722,7 +811,7 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
           )}
 
           {/* 输入框 */}
-          {!isMinimized && (
+          {windowSize !== 'minimized' && (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -733,7 +822,7 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
                 }
               }}
               style={{
-                padding: '12px 16px',
+                padding: windowSize === 'fullscreen' ? '16px 24px' : '12px 16px',
                 borderTop: '1px solid #1f2937',
                 display: 'flex',
                 gap: '8px',
@@ -745,22 +834,22 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
                 disabled={isLoading}
                 style={{
                   flex: 1,
-                  height: '44px',
+                  height: windowSize === 'fullscreen' ? '52px' : '44px',
                   padding: '0 14px',
                   borderRadius: '12px',
                   border: '1px solid #1f2937',
                   background: '#0b1220',
                   color: '#e5e7eb',
                   outline: 'none',
-                  fontSize: '14px',
+                  fontSize: windowSize === 'fullscreen' ? '15px' : '14px',
                 }}
               />
               <button
                 type="submit"
                 disabled={isLoading}
                 style={{
-                  height: '44px',
-                  padding: '0 16px',
+                  height: windowSize === 'fullscreen' ? '52px' : '44px',
+                  padding: windowSize === 'fullscreen' ? '0 20px' : '0 16px',
                   borderRadius: '12px',
                   border: 'none',
                   background: isLoading ? '#374151' : 'linear-gradient(180deg, #0ea5e9, #22d3ee)',
