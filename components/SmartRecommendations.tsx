@@ -33,6 +33,20 @@ interface FundRecommendation {
   expectedRisk: number;
 }
 
+interface RAGDocument {
+  id: string;
+  title: string;
+  category: string;
+  content: string;
+  tags: string[];
+  relevanceScore: number;
+}
+
+interface RAGResult {
+  relevantDocuments: RAGDocument[];
+  ragAdvice: string;
+}
+
 const RISK_OPTIONS = [
   { value: 'conservative', label: '保守', description: '低风险，追求稳定收益' },
   { value: 'moderate', label: '稳健', description: '中等风险，平衡收益与风险' },
@@ -63,28 +77,54 @@ export function SmartRecommendations() {
   const [recommendations, setRecommendations] = useState<FundRecommendation[]>([]);
   const [advice, setAdvice] = useState<string>('');
   const [showResults, setShowResults] = useState(false);
+  const [ragResult, setRagResult] = useState<RAGResult | null>(null);
+  const [userQuery, setUserQuery] = useState<string>('');
 
   const handleGetRecommendations = async () => {
     setLoading(true);
     setShowResults(false);
+    setRagResult(null);
 
     try {
-      const response = await fetch('/api/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(preferences),
-      });
+      // Call both recommendation APIs in parallel
+      const [recommendResponse, ragResponse] = await Promise.all([
+        fetch('/api/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(preferences),
+        }),
+        // Only call RAG API if user provided a query
+        userQuery.trim() ? fetch('/api/rag/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: userQuery,
+            preferences,
+          }),
+        }) : Promise.resolve(null),
+      ]);
 
-      if (!response.ok) {
+      if (!recommendResponse.ok) {
         throw new Error('获取推荐失败');
       }
 
-      const data = await response.json();
+      const recommendData = await recommendResponse.json();
 
-      if (data.success) {
-        setRecommendations(data.data.recommendations);
-        setAdvice(data.data.advice);
+      if (recommendData.success) {
+        setRecommendations(recommendData.data.recommendations);
+        setAdvice(recommendData.data.advice);
         setShowResults(true);
+      }
+
+      // Process RAG results if query was provided
+      if (ragResponse && ragResponse.ok) {
+        const ragData = await ragResponse.json();
+        if (ragData.success) {
+          setRagResult({
+            relevantDocuments: ragData.data.relevantContext || [],
+            ragAdvice: ragData.data.advice || '',
+          });
+        }
       }
     } catch (error) {
       console.error('Failed to get recommendations:', error);
@@ -218,6 +258,36 @@ export function SmartRecommendations() {
             </select>
           </div>
 
+          {/* RAG 智能查询 */}
+          <div className="form-group" style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#9ca3af' }}>
+              <span style={{ color: '#22d3ee' }}>🤖</span> 智能问答（可选）
+            </label>
+            <input
+              type="text"
+              value={userQuery}
+              onChange={(e) => setUserQuery(e.target.value)}
+              placeholder="例如：我想投资债券基金，有什么建议？"
+              style={{
+                width: '100%',
+                height: '44px',
+                padding: '0 12px',
+                borderRadius: '8px',
+                border: '1px solid #1f2937',
+                background: '#0b1220',
+                color: '#e5e7eb',
+                outline: 'none',
+                fontSize: '13px',
+                transition: 'border-color 0.2s ease',
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#22d3ee'}
+              onBlur={(e) => e.target.style.borderColor = '#1f2937'}
+            />
+            <div style={{ marginTop: '6px', fontSize: '11px', color: '#6b7280' }}>
+              💡 输入问题将基于基金研究知识库为您提供专业建议
+            </div>
+          </div>
+
           <button
             onClick={handleGetRecommendations}
             disabled={loading}
@@ -242,6 +312,82 @@ export function SmartRecommendations() {
         {/* 推荐结果 */}
         {showResults && recommendations.length > 0 && (
           <div className="recommendations-results" style={{ marginTop: '24px' }}>
+            {/* RAG 智能分析结果 */}
+            {ragResult && ragResult.relevantDocuments.length > 0 && (
+              <div className="rag-results" style={{
+                padding: '16px',
+                background: 'rgba(168, 85, 247, 0.05)',
+                border: '1px solid rgba(168, 85, 247, 0.2)',
+                borderRadius: '12px',
+                marginBottom: '20px',
+              }}>
+                <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>📚</span>
+                  <span>知识库分析</span>
+                </h4>
+
+                {ragResult.ragAdvice && (
+                  <div style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(168, 85, 247, 0.1)' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#9ca3af', lineHeight: '1.6' }}>
+                      {ragResult.ragAdvice}
+                    </p>
+                  </div>
+                )}
+
+                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>
+                  相关研究资料：
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {ragResult.relevantDocuments.map((doc) => (
+                    <div
+                      key={doc.id}
+                      style={{
+                        padding: '10px',
+                        background: 'rgba(168, 85, 247, 0.05)',
+                        border: '1px solid rgba(168, 85, 247, 0.1)',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#e5e7eb' }}>
+                          {doc.title}
+                        </span>
+                        <span style={{
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          background: 'rgba(168, 85, 247, 0.1)',
+                          color: '#a855f7',
+                          fontSize: '10px',
+                          fontWeight: 600,
+                        }}>
+                          {Math.round(doc.relevanceScore * 100)}% 匹配
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '4px' }}>
+                        {doc.content.substring(0, 80)}...
+                      </div>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {doc.tags.map((tag, i) => (
+                          <span
+                            key={i}
+                            style={{
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              background: 'rgba(168, 85, 247, 0.1)',
+                              color: '#a855f7',
+                              fontSize: '10px',
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {advice && (
               <div className="advice-box" style={{
                 padding: '16px',

@@ -3,9 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AIAdvisorChat } from '../components/AIAdvisorChat';
+import { EnhancedAIChat } from '../components/EnhancedAIChat';
 import { ImageRecognitionButton } from '../components/ImageRecognitionButton';
 import { SmartRecommendations } from '../components/SmartRecommendations';
 import { RiskDashboard } from '../components/RiskDashboard';
+import { FundDetailModal } from '../components/FundDetailModal';
+import { FundFilters } from '../components/FundFilters';
+import { PortfolioStats } from '../components/PortfolioStats';
+import { FundCompare, CompareButton } from '../components/FundCompare';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 function PlusIcon(props) {
   return (
@@ -107,6 +113,23 @@ export default function HomePage() {
   const [favorites, setFavorites] = useState(new Set());
   const [currentTab, setCurrentTab] = useState('all');
 
+  // 详情弹窗状态
+  const [selectedFund, setSelectedFund] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // 筛选后的基金列表
+  const [filteredFunds, setFilteredFunds] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
+
+  // 基金对比状态
+  const [comparingFunds, setComparingFunds] = useState([]);
+
+  // 当基金列表或标签页变化时更新筛选列表
+  useEffect(() => {
+    const tabFiltered = funds.filter(f => currentTab === 'all' || favorites.has(f.code));
+    setFilteredFunds(tabFiltered);
+  }, [funds, currentTab, favorites]);
+
   const toggleFavorite = (code) => {
     setFavorites(prev => {
       const next = new Set(prev);
@@ -133,6 +156,26 @@ export default function HomePage() {
       localStorage.setItem('collapsedCodes', JSON.stringify(Array.from(next)));
       return next;
     });
+  };
+
+  // 对比功能处理
+  const toggleCompare = (fund) => {
+    setComparingFunds(prev => {
+      const exists = prev.find(f => f.code === fund.code);
+      if (exists) {
+        return prev.filter(f => f.code !== fund.code);
+      } else {
+        if (prev.length >= 5) {
+          alert('最多只能对比5只基金');
+          return prev;
+        }
+        return [...prev, fund];
+      }
+    });
+  };
+
+  const clearCompare = () => {
+    setComparingFunds([]);
   };
 
   useEffect(() => {
@@ -523,6 +566,7 @@ export default function HomePage() {
           >
             <RefreshIcon className={refreshing ? 'spin' : ''} width="18" height="18" />
           </button>
+          <ThemeToggle />
           <button
             className="icon-button"
             aria-label="打开设置"
@@ -655,15 +699,27 @@ export default function HomePage() {
           {funds.length === 0 ? (
             <div className="glass card empty">尚未添加基金</div>
           ) : (
-            <div className="grid">
-              {funds
-                .filter(f => currentTab === 'all' || favorites.has(f.code))
-                .map((f) => (
+            <>
+              {/* 基金筛选和排序 */}
+              <FundFilters
+                funds={filteredFunds}
+                onFilteredFundsChange={setFilteredFunds}
+              />
+
+              <div className="grid">
+                {filteredFunds.map((f) => (
                 <div key={f.code} className="col-6">
-                  <div className="glass card">
+                  <div
+                    className="glass card fund-card"
+                    onClick={() => {
+                      setSelectedFund(f);
+                      setShowDetailModal(true);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <div className="row" style={{ marginBottom: 10 }}>
                       <div className="title">
-                        <button 
+                        <button
                           className={`icon-button fav-button ${favorites.has(f.code) ? 'active' : ''}`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -677,13 +733,21 @@ export default function HomePage() {
                         <span className="muted">#{f.code}</span>
                       </div>
                       <div className="actions">
+                        <CompareButton
+                          fund={f}
+                          isComparing={comparingFunds.some(cf => cf.code === f.code)}
+                          onToggle={() => toggleCompare(f)}
+                        />
                         <div className="badge-v">
                           <span>估值时间</span>
                           <strong>{f.gztime || f.time || '-'}</strong>
                         </div>
                         <button
                           className="icon-button danger"
-                          onClick={() => removeFund(f.code)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFund(f.code);
+                          }}
                           title="删除"
                         >
                           <TrashIcon width="18" height="18" />
@@ -695,29 +759,32 @@ export default function HomePage() {
                       <Stat label="估值净值" value={f.gsz ?? '—'} />
                       <Stat label="涨跌幅" value={typeof f.gszzl === 'number' ? `${f.gszzl.toFixed(2)}%` : f.gszzl ?? '—'} delta={Number(f.gszzl) || 0} />
                     </div>
-                    <div 
-                      style={{ marginBottom: 8, cursor: 'pointer', userSelect: 'none' }} 
+                    <div
+                      style={{ marginBottom: 8, cursor: 'pointer', userSelect: 'none' }}
                       className="title"
-                      onClick={() => toggleCollapse(f.code)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCollapse(f.code);
+                      }}
                     >
                       <div className="row" style={{ width: '100%', flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span>前10重仓股票</span>
-                          <ChevronIcon 
-                            width="16" 
-                            height="16" 
+                          <ChevronIcon
+                            width="16"
+                            height="16"
                             className="muted"
-                            style={{ 
+                            style={{
                               transform: collapsedCodes.has(f.code) ? 'rotate(-90deg)' : 'rotate(0deg)',
                               transition: 'transform 0.2s ease'
-                            }} 
+                            }}
                           />
                         </div>
                         <span className="muted">涨跌幅 / 占比</span>
                       </div>
                     </div>
                     {Array.isArray(f.holdings) && f.holdings.length ? (
-                      <div className={`list ${collapsedCodes.has(f.code) ? 'collapsed' : ''}`} style={{ 
+                      <div className={`list ${collapsedCodes.has(f.code) ? 'collapsed' : ''}`} style={{
                         display: collapsedCodes.has(f.code) ? 'none' : 'grid'
                       }}>
                         {f.holdings.map((h, idx) => (
@@ -741,6 +808,7 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+            </>
           )}
         </div>
       </div>
@@ -756,22 +824,62 @@ export default function HomePage() {
 
       {/* 风险分析仪表板 - 仅在有基金时显示 */}
       {funds.length > 0 && (
-        <div className="grid">
-          <div className="col-12">
-            <div className="glass card" style={{ padding: '20px' }}>
-              <h2 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 600 }}>
-                风险分析
-              </h2>
-              <RiskDashboard funds={funds} />
+        <>
+          {/* 数据统计 */}
+          <div className="grid">
+            <div className="col-12">
+              <div className="glass card" style={{ padding: '20px' }}>
+                <h2 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 600 }}>
+                  数据统计
+                </h2>
+                <PortfolioStats funds={funds} />
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* 风险分析 */}
+          <div className="grid">
+            <div className="col-12">
+              <div className="glass card" style={{ padding: '20px' }}>
+                <h2 style={{ marginBottom: '16px', fontSize: '18px', fontWeight: 600 }}>
+                  风险分析
+                </h2>
+                <RiskDashboard funds={funds} />
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       <div className="footer">数据源：实时估值与重仓直连东方财富，无需后端，部署即用</div>
 
-      {/* AI 聊天组件 */}
-      <AIAdvisorChat />
+      {/* AI 聊天组件 - 使用增强版 */}
+      <EnhancedAIChat funds={funds} />
+
+      {/* 基金详情弹窗 */}
+      {showDetailModal && selectedFund && (
+        <FundDetailModal
+          fund={selectedFund}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedFund(null);
+          }}
+          onToggleFavorite={toggleFavorite}
+          isFavorite={favorites.has(selectedFund.code)}
+          onRemove={removeFund}
+        />
+      )}
+
+      {/* 基金对比组件 */}
+      <FundCompare
+        funds={funds}
+        comparingFunds={comparingFunds}
+        onAddToCompare={toggleCompare}
+        onRemoveFromCompare={(code) => {
+          setComparingFunds(prev => prev.filter(f => f.code !== code));
+        }}
+        onClearAll={clearCompare}
+      />
 
       {settingsOpen && (
         <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="设置" onClick={() => setSettingsOpen(false)}>

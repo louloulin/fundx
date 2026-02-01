@@ -1339,7 +1339,7 @@ export function RiskDashboard() {
 #### Phase 3: 推荐系统 (Week 5-6) ✅ 已完成
 - [x] 实现多因子评分模型
 - [x] 机器学习选基算法
-- [ ] RAG 增强推荐 (可选)
+- [x] RAG 增强推荐 (本地 TF-IDF 实现)
 - [x] 用户偏好分析
 - [x] 推荐解释生成
 
@@ -1350,12 +1350,29 @@ export function RiskDashboard() {
 - [x] VaR 计算
 - [x] 风险仪表板
 
-#### Phase 5: 用户界面 (Week 9-10) ✅ 已完成
+#### Phase 5: 用户界面 (Week 9-10) ✅ 完全完成
 - [x] AI 聊天界面
+- [x] **增强版 AI 聊天** (EnhancedAIChat) ✨ 新增
+  - [x] Mastra Agent 工具调用集成
+  - [x] Markdown 渲染支持
+  - [x] 智能建议问题系统
+  - [x] 聊天历史和会话管理
+  - [x] 最小化/最大化功能
+  - [x] 会话导出功能
+  - [x] **流式响应支持** ✨ 新增
+    - 实时显示 AI 生成的内容
+    - 工具调用状态提示
+    - 更流畅的聊天体验
 - [x] 智能推荐展示
 - [x] 图片识别入口
 - [x] 风险分析可视化
 - [x] 移动端适配 (基础响应式)
+- [x] **基金详情弹窗** (FundDetailModal) ✨ 新增
+- [x] **基金筛选和排序** (FundFilters) ✨ 新增
+- [x] **数据统计和图表** (PortfolioStats) ✨ 新增
+- [x] **骨架屏加载动画** (Skeleton) ✨ 新增
+- [x] **基金对比功能** (FundCompare) ✨ 新增
+- [x] **主题切换功能** (ThemeToggle) ✨ 新增
 
 #### Phase 6: 测试发布 (Week 11-12) ✅ 部分完成
 - [x] 功能测试
@@ -1429,12 +1446,31 @@ curl -X POST http://localhost:3000/api/workflows/fund-selection \
 3. **API 路由**
    - `/api/vision/recognize`: 图片识别接口
    - `/api/ai/chat`: AI 聊天接口（流式响应）
+   - `/api/ai/agent-chat`: **增强 AI 聊天接口（支持工具调用）** ✨ 新增
+     - 支持的模型：GLM-4.5-Air、GLM-4-Plus
+     - 工具调用：`searchFunds`、`analyzePortfolio`、`getMarketOverview`
+     - 两阶段调用：检测工具需求 → 执行工具 → 生成最终回复
+   - `/api/ai/agent-chat-stream`: **流式 AI 聊天接口（实时响应）** ✨ 新增
+     - 实时流式输出 AI 生成的内容
+     - 显示工具调用状态（基金搜索、组合分析、市场概况）
+     - 提供更流畅的聊天体验
    - `/api/recommend`: 智能推荐接口
+   - `/api/rag/recommend`: RAG 增强推荐接口 ✨ 新增
    - `/api/risk/analyze`: 风险分析接口
    - `/api/workflows/fund-selection`: 工作流执行接口
 
 4. **前端组件**
    - `AIAdvisorChat`: 智能投顾聊天组件
+   - `EnhancedAIChat`: **增强版 AI 聊天组件** ✨ 新增
+     - 支持 Mastra Agent 工具调用
+     - Markdown 渲染（粗体、斜体、代码块、列表、链接）
+     - 智能建议问题系统（基于持仓上下文）
+     - 聊天历史管理（多会话、本地存储、导出）
+     - 最小化/最大化功能
+     - **流式响应支持**（实时显示 AI 生成内容）✨ 新增
+   - `MessageContent`: Markdown 消息渲染器 ✨ 新增
+   - `SmartSuggestions`: 智能建议组件（含 RAG 问答） ✨ 新增
+   - `ChatHistory`: 聊天历史组件（侧边栏、导出） ✨ 新增
    - `ImageRecognitionButton`: 截图识别添加按钮
    - `SmartRecommendations`: 智能推荐组件
    - `RiskDashboard`: 风险分析仪表板
@@ -1461,6 +1497,13 @@ curl -X POST http://localhost:3000/api/workflows/fund-selection \
    - 工作流执行器 (`lib/mastra/workflows/fund-selection-workflow.ts`)
    - 基金选择工作流配置
    - Agent 协同编排
+
+9. **RAG 增强推荐系统** ✅ 新增
+   - 本地向量化引擎 (`lib/rag/enhanced-recommender.ts`)
+   - TF-IDF 语义搜索实现
+   - 基金研究知识库（10份研究文档）
+   - RAG API 路由 (`/api/rag/recommend`)
+   - SmartRecommendations 组件集成智能问答输入
 
 7. **配置文件**
    - `lib/mastra/config.ts`: Mastra 配置
@@ -1502,29 +1545,48 @@ curl -X POST http://localhost:3000/api/workflows/fund-selection \
 real-time-fund/
 ├── app/
 │   ├── api/
-│   │   ├── ai/chat/route.ts             # AI 聊天 API
-│   │   ├── recommend/route.ts            # 智能推荐 API
-│   │   ├── risk/analyze/route.ts        # 风险分析 API
-│   │   ├── vision/recognize/route.ts     # 图片识别 API
+│   │   ├── ai/
+│   │   │   ├── chat/route.ts                # AI 聊天 API（流式响应）
+│   │   │   ├── agent-chat/route.ts          # 增强聊天 API（工具调用） ✨ 新增
+│   │   │   └── agent-chat-stream/route.ts   # 流式聊天 API（实时响应） ✨ 新增
+│   │   ├── rag/recommend/route.ts           # RAG 增强推荐 API ✅ 新增
+│   │   ├── recommend/route.ts               # 智能推荐 API
+│   │   ├── risk/analyze/route.ts           # 风险分析 API
+│   │   ├── vision/recognize/route.ts        # 图片识别 API
+│   │   ├── config/route.ts                  # API 配置检查 API ✨ 新增
 │   │   └── workflows/
-│   │       └── fund-selection/route.ts  # 工作流 API
-│   ├── page.jsx                          # 主页面
+│   │       └── fund-selection/route.ts      # 工作流 API
+│   ├── page.jsx                              # 主页面
 │   └── layout.jsx
 ├── components/
-│   ├── AIAdvisorChat.tsx               # AI 聊天组件
-│   ├── ImageRecognitionButton.tsx      # 图片识别按钮
-│   ├── SmartRecommendations.tsx        # 智能推荐组件
-│   └── RiskDashboard.tsx               # 风险分析仪表板
+│   ├── AIAdvisorChat.tsx                   # 基础 AI 聊天组件
+│   ├── EnhancedAIChat.tsx                  # **增强版 AI 聊天组件（含流式响应）** ✨ 新增
+│   ├── MessageContent.tsx                   # **Markdown 消息渲染器** ✨ 新增
+│   ├── SmartSuggestions.tsx                # **智能建议组件** ✨ 新增
+│   ├── ChatHistory.tsx                     # **聊天历史组件** ✨ 新增
+│   ├── ImageRecognitionButton.tsx          # 图片识别按钮
+│   ├── SmartRecommendations.tsx            # 智能推荐组件（含 RAG）
+│   ├── RiskDashboard.tsx                   # 风险分析仪表板
+│   ├── FundDetailModal.tsx                 # 基金详情弹窗 ✅ 新增
+│   ├── FundFilters.tsx                     # 基金筛选排序 ✅ 新增
+│   ├── PortfolioStats.tsx                  # 数据统计图表 ✅ 新增
+│   ├── Skeleton.tsx                        # 骨架屏组件 ✅ 新增
+│   ├── FundCompare.tsx                     # 基金对比功能 ✅ 新增
+│   └── ThemeToggle.tsx                     # 主题切换功能 ✅ 新增
 ├── lib/
 │   ├── mastra/
-│   │   ├── config.ts                    # Mastra 配置
+│   │   ├── config.ts                        # Mastra 配置
 │   │   ├── agents/
-│   │   │   └── index.ts                 # Agent 注册
+│   │   │   └── index.ts                     # Agent 注册
 │   │   ├── tools/
-│   │   │   ├── index.ts                 # Mastra 工具集
-│   │   │   └── fund-api.ts              # 基金 API 工具
+│   │   │   ├── index.ts                     # Mastra 工具集
+│   │   │   └── fund-api.ts                  # 基金 API 工具
 │   │   └── workflows/
 │   │       └── fund-selection-workflow.ts  # 工作流系统
+│   ├── rag/
+│   │   └── enhanced-recommender.ts      # RAG 增强推荐器 ✅ 新增
+│   ├── theme/
+│   │   └── theme-context.tsx            # 主题上下文 ✅ 新增
 │   ├── scoring/
 │   │   └── multi-factor.ts              # 多因子评分模型
 │   ├── recommendation/
@@ -1535,9 +1597,10 @@ real-time-fund/
 ├── TESTING.md                           # 测试验证文档
 └── plan1.1.md                           # 设计文档
 ```
-│       └── portfolio-risk.ts          # 组合风险分析
-├── .env.local.example                 # 环境变量模板
-└── plan1.1.md                         # 设计文档
+│       └── portfolio-risk.ts           # 组合风险分析
+├── .env.local.example                   # 环境变量模板
+├── TESTING.md                           # 测试验证文档
+└── plan1.1.md                           # 设计文档
 ```
 
 ### 功能完成度统计

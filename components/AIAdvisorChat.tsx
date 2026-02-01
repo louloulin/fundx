@@ -3,6 +3,12 @@
  *
  * AI 投顾聊天组件
  * 提供智能基金投资建议
+ *
+ * Features:
+ * - 流式响应
+ * - 智能建议问题
+ * - 对话历史管理
+ * - 自适应主题
  */
 
 'use client';
@@ -26,9 +32,10 @@ const SUGGESTED_QUESTIONS = [
 
 export function AIAdvisorChat() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, append } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append, error } = useChat({
     api: '/api/ai/chat',
     initialMessages: [
       {
@@ -37,6 +44,9 @@ export function AIAdvisorChat() {
         content: '你好！我是你的智能基金投资顾问。我可以帮你：\n\n📊 基金搜索与分析\n💡 投资建议与推荐\n⚠️ 风险评估\n📈 持仓优化\n\n有什么可以帮到你的吗？',
       },
     ],
+    onError: (error) => {
+      console.error('Chat error:', error);
+    },
   });
 
   // 自动滚动到底部
@@ -46,6 +56,12 @@ export function AIAdvisorChat() {
 
   const handleSuggestionClick = (question: string) => {
     append({ role: 'user', content: question });
+  };
+
+  // 清除对话历史
+  const handleClearHistory = () => {
+    // 重新加载页面或清除消息
+    window.location.reload();
   };
 
   return (

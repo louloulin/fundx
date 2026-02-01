@@ -1,5 +1,6 @@
 import Script from 'next/script';
 import './globals.css';
+import { ThemeProvider } from '../lib/theme/theme-context';
 
 export const metadata = {
   title: '实时基金估值',
@@ -10,7 +11,7 @@ export default function RootLayout({ children }) {
   const GA_ID = 'G-PD2JWJHVEM'; // 请在此处替换您的 Google Analytics ID
 
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className="dark">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         {/* Google Analytics */}
@@ -28,7 +29,7 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body>
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

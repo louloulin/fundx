@@ -62,6 +62,39 @@
 - [x] 工作流系统 (`lib/mastra/workflows/fund-selection-workflow.ts`)
 - [x] 工作流 API (`/api/workflows/fund-selection`)
 
+### 🆕 RAG 增强推荐系统 ✅
+- [x] 本地 TF-IDF 向量化引擎 (`lib/rag/enhanced-recommender.ts`)
+- [x] 基金研究知识库（10份文档）
+- [x] 语义搜索和余弦相似度计算
+- [x] RAG API (`/api/rag/recommend`)
+- [x] SmartRecommendations 组件智能问答集成
+
+### 🆕 UI 增强功能 ✅
+- [x] **基金详情弹窗** (`components/FundDetailModal.tsx`)
+  - 点击基金卡片弹出详情
+  - 净值走势 SVG 图表
+  - 重仓股票表格展示
+  - 基金信息卡片
+  - 加自选/删除操作
+- [x] **基金筛选排序** (`components/FundFilters.tsx`)
+  - 按类型筛选（股票型、债券型、混合型等）
+  - 多维度排序（名称、净值、涨幅）
+  - 实时筛选结果计数
+  - 活跃筛选标签显示
+- [x] **数据统计图表** (`components/PortfolioStats.tsx`)
+  - 总资产、平均涨跌、当日收益统计卡片
+  - 涨跌分布（上涨/平盘/下跌基金数）
+  - 收益趋势折线图（近30日）
+  - 基金类型分布饼图
+  - 类型表现详情列表
+- [x] **骨架屏加载动画** (`components/Skeleton.tsx`)
+  - 文本、圆形、矩形骨架屏
+  - 基金卡片骨架屏
+  - 统计网格骨架屏
+  - 表格骨架屏
+  - 推荐列表骨架屏
+  - 淡入淡出动画效果
+
 ---
 
 ## 🏗️ 技术架构
@@ -113,6 +146,7 @@ real-time-fund/
 ├── app/
 │   ├── api/
 │   │   ├── ai/chat/route.ts             # AI 聊天 API
+│   │   ├── rag/recommend/route.ts       # RAG 增强推荐 API
 │   │   ├── recommend/route.ts            # 智能推荐 API
 │   │   ├── risk/analyze/route.ts        # 风险分析 API
 │   │   ├── vision/recognize/route.ts     # 图片识别 API
@@ -123,8 +157,12 @@ real-time-fund/
 ├── components/
 │   ├── AIAdvisorChat.tsx                # AI 聊天组件
 │   ├── ImageRecognitionButton.tsx       # 图片识别按钮
-│   ├── SmartRecommendations.tsx         # 智能推荐组件
-│   └── RiskDashboard.tsx                # 风险分析仪表板
+│   ├── SmartRecommendations.tsx         # 智能推荐组件（含 RAG）
+│   ├── RiskDashboard.tsx                # 风险分析仪表板
+│   ├── FundDetailModal.tsx              # 基金详情弹窗 ✨ 新增
+│   ├── FundFilters.tsx                  # 基金筛选排序 ✨ 新增
+│   ├── PortfolioStats.tsx               # 数据统计图表 ✨ 新增
+│   └── Skeleton.tsx                     # 骨架屏组件 ✨ 新增
 ├── lib/
 │   ├── mastra/
 │   │   ├── config.ts                     # Mastra 配置
@@ -137,6 +175,8 @@ real-time-fund/
 │   │   │   └── fund-api.ts               # 基金 API 工具
 │   │   └── workflows/
 │   │       └── fund-selection-workflow.ts  # 工作流系统
+│   ├── rag/
+│   │   └── enhanced-recommender.ts       # RAG 增强推荐器
 │   ├── scoring/
 │   │   └── multi-factor.ts               # 多因子评分模型
 │   ├── recommendation/
@@ -157,6 +197,7 @@ real-time-fund/
 | `/api/ai/chat` | POST | AI 聊天对话（流式） | GLM-4.5-Air |
 | `/api/vision/recognize` | POST | 图片识别 | Tesseract + GLM-4V-Flash |
 | `/api/recommend` | POST | 智能推荐 | 多因子评分 |
+| `/api/rag/recommend` | POST | RAG 增强推荐 | TF-IDF 向量搜索 |
 | `/api/risk/analyze` | POST | 风险分析 | 本地计算 |
 | `/api/workflows/fund-selection` | POST | 工作流执行 | Mastra Workflow |
 
