@@ -126,7 +126,11 @@ export default function HomePage() {
 
   // 当基金列表或标签页变化时更新筛选列表
   useEffect(() => {
-    const tabFiltered = funds.filter(f => currentTab === 'all' || favorites.has(f.code));
+    // 先去重，确保没有重复的基金代码
+    const uniqueFunds = funds.filter((fund, index, self) =>
+      index === self.findIndex(f => f.code === fund.code)
+    );
+    const tabFiltered = uniqueFunds.filter(f => currentTab === 'all' || favorites.has(f.code));
     setFilteredFunds(tabFiltered);
   }, [funds, currentTab]);
 
@@ -233,8 +237,92 @@ export default function HomePage() {
   };
 
   const fetchFundData = async (c) => {
+    try {
+      // 优先使用服务端代理 API（避免 CSP 问题）
+      const proxyResponse = await fetch(`/api/proxy/fund-detail?code=${c}`);
+      if (proxyResponse.ok) {
+        const proxyData = await proxyResponse.json();
+        if (proxyData.success && proxyData.data) {
+          // 获取重仓股票列表
+          const holdingsUrl = `https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jjcc&code=${c}&topline=10&year=&month=&rt=${Date.now()}`;
+
+          try {
+            await loadScript(holdingsUrl);
+            let holdings = [];
+            const html = window.apidata?.content || '';
+            const rows = html.match(/<tr[\s\S]*?<\/tr>/gi) || [];
+
+            for (const r of rows) {
+              const cells = (r.match(/<td[\s\S]*?>([\s\S]*?)<\/td>/gi) || []).map(td => td.replace(/<[^>]*>/g, '').trim());
+              const codeIdx = cells.findIndex(txt => /^\d{6}$/.test(txt));
+              const weightIdx = cells.findIndex(txt => /\d+(?:\.\d+)?\s*%/.test(txt));
+
+              if (codeIdx >= 0 && weightIdx >= 0) {
+                holdings.push({
+                  code: cells[codeIdx],
+                  name: cells[codeIdx + 1] || '',
+                  weight: cells[weightIdx],
+                  change: null
+                });
+              }
+            }
+
+            holdings = holdings.slice(0, 10);
+
+            // 尝试获取股票涨跌幅
+            if (holdings.length) {
+              const getTencentPrefix = (code) => {
+                if (code.startsWith('6') || code.startsWith('9')) return 'sh';
+                if (code.startsWith('0') || code.startsWith('3')) return 'sz';
+                if (code.startsWith('4') || code.startsWith('8')) return 'bj';
+                return 'sz';
+              };
+
+              try {
+                const tencentCodes = holdings.map(h => `s_${getTencentPrefix(h.code)}${h.code}`).join(',');
+                const quoteUrl = `https://qt.gtimg.cn/q=${tencentCodes}`;
+
+                await new Promise((resQuote) => {
+                  const scriptQuote = document.createElement('script');
+                  scriptQuote.src = quoteUrl;
+                  scriptQuote.onload = () => {
+                    holdings.forEach(h => {
+                      const varName = `v_s_${getTencentPrefix(h.code)}${h.code}`;
+                      const dataStr = window[varName];
+                      if (dataStr) {
+                        const parts = dataStr.split('~');
+                        if (parts.length > 5) {
+                          h.change = parseFloat(parts[5]);
+                        }
+                      }
+                    });
+                    if (document.body.contains(scriptQuote)) document.body.removeChild(scriptQuote);
+                    resQuote();
+                  };
+                  scriptQuote.onerror = () => {
+                    if (document.body.contains(scriptQuote)) document.body.removeChild(scriptQuote);
+                    resQuote();
+                  };
+                  document.body.appendChild(scriptQuote);
+                });
+              } catch (e) {
+                console.error('获取股票涨跌幅失败', e);
+              }
+            }
+
+            return { ...proxyData.data, holdings };
+          } catch (e) {
+            console.error('获取重仓数据失败', e);
+            return { ...proxyData.data, holdings: [] };
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('代理 API 失败，尝试直接获取:', e);
+    }
+
+    // 降级到 JSONP 方式
     return new Promise(async (resolve, reject) => {
-      // 腾讯接口识别逻辑优化
       const getTencentPrefix = (code) => {
         if (code.startsWith('6') || code.startsWith('9')) return 'sh';
         if (code.startsWith('0') || code.startsWith('3')) return 'sz';
@@ -243,18 +331,14 @@ export default function HomePage() {
       };
 
       const gzUrl = `https://fundgz.1234567.com.cn/js/${c}.js?rt=${Date.now()}`;
-      
-      // 使用更安全的方式处理全局回调，避免并发覆盖
       const currentCallback = `jsonpgz_${c}_${Math.random().toString(36).slice(2, 7)}`;
-      
-      // 动态拦截并处理 jsonpgz 回调
+
       const scriptGz = document.createElement('script');
-      // 东方财富接口固定调用 jsonpgz，我们通过修改全局变量临时捕获它
       scriptGz.src = gzUrl;
-      
+
       const originalJsonpgz = window.jsonpgz;
       window.jsonpgz = (json) => {
-        window.jsonpgz = originalJsonpgz; // 立即恢复
+        window.jsonpgz = originalJsonpgz;
         const gszzlNum = Number(json.gszzl);
         const gzData = {
           code: json.fundcode,
@@ -264,7 +348,7 @@ export default function HomePage() {
           gztime: json.gztime,
           gszzl: Number.isFinite(gszzlNum) ? gszzlNum : json.gszzl
         };
-        
+
         // 获取重仓股票列表
         const holdingsUrl = `https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jjcc&code=${c}&topline=10&year=&month=&rt=${Date.now()}`;
         loadScript(holdingsUrl).then(async () => {
@@ -284,14 +368,14 @@ export default function HomePage() {
               });
             }
           }
-          
+
           holdings = holdings.slice(0, 10);
-          
+
           if (holdings.length) {
             try {
               const tencentCodes = holdings.map(h => `s_${getTencentPrefix(h.code)}${h.code}`).join(',');
               const quoteUrl = `https://qt.gtimg.cn/q=${tencentCodes}`;
-              
+
               await new Promise((resQuote) => {
                 const scriptQuote = document.createElement('script');
                 scriptQuote.src = quoteUrl;
@@ -301,7 +385,6 @@ export default function HomePage() {
                     const dataStr = window[varName];
                     if (dataStr) {
                       const parts = dataStr.split('~');
-                      // parts[5] 是涨跌幅
                       if (parts.length > 5) {
                         h.change = parseFloat(parts[5]);
                       }
@@ -320,7 +403,7 @@ export default function HomePage() {
               console.error('获取股票涨跌幅失败', e);
             }
           }
-          
+
           resolve({ ...gzData, holdings });
         }).catch(() => resolve({ ...gzData, holdings: [] }));
       };
@@ -332,7 +415,6 @@ export default function HomePage() {
       };
 
       document.body.appendChild(scriptGz);
-      // 加载完立即移除脚本
       setTimeout(() => {
         if (document.body.contains(scriptGz)) document.body.removeChild(scriptGz);
       }, 5000);
@@ -425,45 +507,59 @@ export default function HomePage() {
     searchDebounceRef.current = setTimeout(async () => {
       setSearchLoading(true);
       try {
-        // 使用天天基金网的搜索接口
-        // 返回格式: var r = [["基金代码","基金简称","基金类型","拼音"],...]
-        const url = `https://fund.eastmoney.com/js/fundcode_search.js?timestamp=${Date.now()}`;
+        let data = [];
 
-        const data = await new Promise((resolve) => {
-          const script = document.createElement('script');
-
-          // 东方财富接口会将结果赋值给 window.r
-          // 脚本加载完成后，window.r 会被设置
-          script.onload = () => {
-            // 直接从 window.r 获取数据
-            const result = window.r || [];
-            // 移除脚本标签
-            if (document.body.contains(script)) {
-              document.body.removeChild(script);
+        // 优先使用服务端代理 API（避免 CSP 问题）
+        try {
+          const proxyResponse = await fetch(`/api/proxy/fund-search?keyword=${encodeURIComponent(keyword)}`);
+          if (proxyResponse.ok) {
+            const proxyData = await proxyResponse.json();
+            if (proxyData.success && proxyData.data) {
+              data = proxyData.data;
             }
-            resolve(result);
-          };
+          }
+        } catch (proxyError) {
+          console.warn('代理 API 搜索失败，尝试 JSONP:', proxyError);
+        }
 
-          script.onerror = () => {
-            if (document.body.contains(script)) {
-              document.body.removeChild(script);
-            }
-            resolve([]);
-          };
+        // 降级到 JSONP 方式
+        if (!data.length) {
+          const url = `https://fund.eastmoney.com/js/fundcode_search.js?timestamp=${Date.now()}`;
 
-          script.src = url;
-          document.body.appendChild(script);
-        });
+          data = await new Promise((resolve) => {
+            const script = document.createElement('script');
+
+            script.onload = () => {
+              const result = window.r || [];
+              if (document.body.contains(script)) {
+                document.body.removeChild(script);
+              }
+              resolve(result);
+            };
+
+            script.onerror = () => {
+              if (document.body.contains(script)) {
+                document.body.removeChild(script);
+              }
+              resolve([]);
+            };
+
+            script.src = url;
+            document.body.appendChild(script);
+          });
+        }
 
         if (Array.isArray(data)) {
-          // 过滤匹配的结果
+          // 数据格式: [code, pinyin, name, type, ...]
           const filtered = data.filter(fund => {
             const code = fund[0] || '';
             const name = fund[2] || '';
-            const pinyin = fund[3] || '';
+            const pinyin = fund[1] || '';
+            const type = fund[3] || '';
             return code.includes(keyword) ||
                    name.toLowerCase().includes(keyword.toLowerCase()) ||
-                   pinyin.toLowerCase().includes(keyword.toLowerCase());
+                   pinyin.toLowerCase().includes(keyword.toLowerCase()) ||
+                   type.toLowerCase().includes(keyword.toLowerCase());
           }).slice(0, 20); // 限制结果数量
 
           setSearchResults(filtered.map(fund => ({

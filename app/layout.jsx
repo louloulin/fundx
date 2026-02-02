@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
   const GA_ID = 'G-PD2JWJHVEM'; // 请在此处替换您的 Google Analytics ID
 
   return (
-    <html lang="zh-CN" className="dark">
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         {/* Google Analytics */}
@@ -21,10 +21,14 @@ export default function RootLayout({ children }) {
         />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
+            try {
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}');
+            } catch (e) {
+              console.error('Google Analytics initialization failed:', e);
+            }
           `}
         </Script>
       </head>

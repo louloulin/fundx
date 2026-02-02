@@ -20,7 +20,7 @@ const MODEL_ID = process.env.ZHIPU_API_KEY
   : 'openai/gpt-4.1-mini';
 
 /**
- * 工具1: 搜索基金
+ * 工具1: 搜索基金（使用统一的搜索服务）
  */
 export const searchFundsTool = createTool({
   id: 'search-funds',
@@ -31,24 +31,36 @@ export const searchFundsTool = createTool({
   execute: async (inputData) => {
     const { keyword } = inputData;
 
-    const mockFunds = [
-      { code: '000001', name: '华夏成长混合', type: '混合型', nav: '1.234', change: 1.23 },
-      { code: '110022', name: '易方达消费行业', type: '股票型', nav: '2.567', change: -0.45 },
-      { code: '163402', name: '兴全趋势投资混合', type: '混合型', nav: '1.890', change: 0.89 },
-    ];
+    try {
+      // 使用统一的基金搜索服务
+      const { searchFunds } = await import('../../services/fund-search');
+      const results = await searchFunds(keyword);
 
-    const filtered = mockFunds.filter(
-      (f) => f.code.includes(keyword) || f.name.includes(keyword)
-    );
+      if (results.length === 0) {
+        return {
+          success: true,
+          results: [],
+          message: `未找到与"${keyword}"匹配的基金，请尝试其他关键词`,
+        };
+      }
 
-    return {
-      success: true,
-      results: filtered.length > 0 ? filtered : mockFunds.slice(0, 3),
-      message:
-        filtered.length > 0
-          ? `找到 ${filtered.length} 只匹配的基金`
-          : '为您推荐以下热门基金',
-    };
+      return {
+        success: true,
+        results: results.map((f) => ({
+          code: f.code,
+          name: f.name,
+          type: f.type,
+        })),
+        message: `找到 ${results.length} 只匹配的基金`,
+      };
+    } catch (error) {
+      console.error('搜索基金失败:', error);
+      return {
+        success: false,
+        results: [],
+        message: `搜索失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      };
+    }
   },
 });
 

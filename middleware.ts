@@ -115,11 +115,12 @@ export function middleware(request: NextRequest) {
       'Content-Security-Policy',
       [
         `default-src 'self'`,
-        `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com`,
+        // 允许动态加载的脚本源（用于基金数据 JSONP）
+        `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fund.eastmoney.com https://fundgz.1234567.com.cn https://www.googletagmanager.com https://fundf10.eastmoney.com https://qt.gtimg.cn`,
         `style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com`,
         `img-src 'self' data: blob: https:`,
         `font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com`,
-        `connect-src 'self' https://fund.eastmoney.com https://fundgz.1234567.com.cn https://open.bigmodel.cn https://api.openai.com`,
+        `connect-src 'self' https://fund.eastmoney.com https://fundgz.1234567.com.cn https://open.bigmodel.cn https://api.openai.com https://push2.eastmoney.com https://www.googletagmanager.com https://www.google-analytics.com https://fundf10.eastmoney.com https://qt.gtimg.cn`,
         `frame-src 'none'`,
         `object-src 'none'`,
         `base-uri 'self'`,

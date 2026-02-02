@@ -135,13 +135,17 @@ export class SmartFundRecommender {
     for (const type of types) {
       try {
         const results = await searchFundsEastmoney(type);
+        // results 是数组格式: [code, pinyin, name, type, ...]
         for (const result of results.slice(0, 20)) {
-          candidates.push({
-            code: result.code,
-            name: result.name,
-            type: result.type || type,
-            // 这里可以添加更多从API获取的数据
-          });
+          // 确保 result 是数组格式
+          if (Array.isArray(result) && result.length >= 4) {
+            candidates.push({
+              code: result[0], // code
+              name: result[2], // name
+              type: result[3] || type, // type
+              // 这里可以添加更多从API获取的数据
+            });
+          }
         }
       } catch (error) {
         console.error(`Failed to search funds for type ${type}:`, error);

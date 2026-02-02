@@ -10,7 +10,7 @@ import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 
 /**
- * 基金搜索工具
+ * 基金搜索工具（使用统一的搜索服务）
  */
 export const searchFundsTool = createTool({
   id: 'search-funds',
@@ -22,45 +22,25 @@ export const searchFundsTool = createTool({
     const { keyword } = inputData;
 
     try {
-      // 调用东方财富基金搜索接口
-      const url = `https://fund.eastmoney.com/js/fundcode_search.js?timestamp=${Date.now()}`;
+      // 使用统一的基金搜索服务
+      const { searchFunds } = await import('../../services/fund-search');
+      const results = await searchFunds(keyword);
 
-      // 使用 JSONP 方式获取数据
-      const response = await fetch(url);
-      const text = await response.text();
-
-      // 解析返回的数据（格式: var r = [...]）
-      const match = text.match(/var r = (\[.*?\]);/);
-      if (!match) {
-        return { funds: [], error: '无法解析基金数据' };
-      }
-
-      const fundsData = JSON.parse(match[1]);
-
-      // 过滤匹配的基金
-      const filtered = fundsData
-        .filter((fund: any[]) => {
-          const code = fund[0] || '';
-          const name = fund[2] || '';
-          const pinyin = fund[1] || '';
-
-          return (
-            code.includes(keyword) ||
-            name.toLowerCase().includes(keyword.toLowerCase()) ||
-            pinyin.toLowerCase().includes(keyword.toLowerCase())
-          );
-        })
-        .slice(0, 20)
-        .map((fund: any[]) => ({
-          code: fund[0],
-          pinyin: fund[1],
-          name: fund[2],
-          type: fund[3],
-        }));
-
-      return { funds: filtered, count: filtered.length };
+      return {
+        funds: results.map(f => ({
+          code: f.code,
+          name: f.name,
+          type: f.type,
+          pinyin: f.pinyin,
+        })),
+        count: results.length,
+      };
     } catch (error) {
-      return { funds: [], error: String(error) };
+      return {
+        funds: [],
+        count: 0,
+        error: String(error),
+      };
     }
   },
 });
