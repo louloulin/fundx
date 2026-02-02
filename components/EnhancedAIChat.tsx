@@ -558,7 +558,7 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
               </div>
               <div>
                 <div style={{ fontWeight: 600, color: '#e5e7eb' }}>AI 投资顾问</div>
-                <div style={{ fontSize: '12px', color: '#22d3ee' }}>Mastra + GLM 框架</div>
+                <div style={{ fontSize: '12px', color: '#22d3ee' }}> AI框架</div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>

@@ -117,7 +117,19 @@ export function AssistantUIChat({ funds = [] }: AssistantUIChatProps) {
           try {
             const data = JSON.parse(line.slice(5));
 
-            if (data.type === 'text' || data.type === 'content') {
+            // Handle Vercel AI SDK format (text-delta)
+            if (data.type === 'text-delta' && data.textDelta) {
+              assistantMessage.content += data.textDelta;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMessage.id
+                    ? { ...m, content: assistantMessage.content }
+                    : m
+                )
+              );
+            }
+            // Handle legacy format (text/content)
+            else if (data.type === 'text' || data.type === 'content') {
               assistantMessage.content += data.content || '';
               setMessages((prev) =>
                 prev.map((m) =>
