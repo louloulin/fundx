@@ -267,7 +267,7 @@ export function SmartRecommendations() {
               type="text"
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
-              placeholder="例如：我想投资债券基金，有什么建议？"
+              placeholder="我想投资债券基金，有什么建议？"
               style={{
                 width: '100%',
                 height: '44px',
@@ -284,7 +284,7 @@ export function SmartRecommendations() {
               onBlur={(e) => e.target.style.borderColor = '#1f2937'}
             />
             <div style={{ marginTop: '6px', fontSize: '11px', color: '#6b7280' }}>
-              💡 输入问题将基于基金研究知识库为您提供专业建议
+              💡 基于基金研究知识库为您提供专业建议
             </div>
           </div>
 

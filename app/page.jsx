@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AIAdvisorChat } from '../components/AIAdvisorChat';
 import { EnhancedAIChat } from '../components/EnhancedAIChat';
 import { ImageRecognitionButton } from '../components/ImageRecognitionButton';
 import { SmartRecommendations } from '../components/SmartRecommendations';
@@ -128,7 +127,7 @@ export default function HomePage() {
   useEffect(() => {
     const tabFiltered = funds.filter(f => currentTab === 'all' || favorites.has(f.code));
     setFilteredFunds(tabFiltered);
-  }, [funds, currentTab, favorites]);
+  }, [funds, currentTab]);
 
   const toggleFavorite = (code) => {
     setFavorites(prev => {
@@ -580,10 +579,14 @@ export default function HomePage() {
 
       <div className="grid">
         <div className="col-12 glass card add-fund-section" role="region" aria-label="添加基金">
-          <div className="title" style={{ marginBottom: 12 }}>
-            <PlusIcon width="20" height="20" />
-            <span>添加基金</span>
-            <span className="muted">输入基金名称搜索，或直接输入代码（如110022）回车添加</span>
+          <div className="title" style={{ marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <PlusIcon width="20" height="20" />
+              <span>添加基金</span>
+            </div>
+            <div className="muted" style={{ fontSize: '13px', marginTop: '4px', paddingLeft: '28px' }}>
+              输入基金名称搜索，或直接输入代码（如110022）回车添加
+            </div>
           </div>
 
           <div style={{ position: 'relative' }} ref={searchInputRef}>
@@ -591,7 +594,7 @@ export default function HomePage() {
               <div style={{ position: 'relative', flex: 1 }}>
                 <input
                   className="input"
-                  placeholder="基金名称或代码..."
+                  placeholder="输入基金代码（如110022）或名称搜索..."
                   value={searchKeyword}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -697,26 +700,46 @@ export default function HomePage() {
           )}
 
           {funds.length === 0 ? (
-            <div className="glass card empty">尚未添加基金</div>
+            <div className="glass card empty" style={{
+              padding: '60px 40px',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '16px'
+            }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: 'var(--card-bg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '8px'
+              }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--muted)' }}>
+                  <path d="M12 2v20M2 12h20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>尚未添加基金</div>
+              <div style={{ fontSize: '14px', color: 'var(--muted)' }}>在上方输入基金名称或代码，点击添加您的第一个基金</div>
+            </div>
           ) : (
-            <>
-              {/* 基金筛选和排序 */}
-              <FundFilters
-                funds={filteredFunds}
-                onFilteredFundsChange={setFilteredFunds}
-              />
-
-              <div className="grid">
-                {filteredFunds.map((f) => (
-                <div key={f.code} className="col-6">
-                  <div
-                    className="glass card fund-card"
-                    onClick={() => {
-                      setSelectedFund(f);
-                      setShowDetailModal(true);
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
+            /* 基金筛选和排序组件 - 使用 children render prop 模式 */
+            <FundFilters funds={filteredFunds}>
+              {(filteredFunds) => (
+                <div className="grid">
+                  {filteredFunds.map((f) => (
+                    <div key={f.code} className="col-6">
+                      <div
+                        className="glass card fund-card"
+                        onClick={() => {
+                          setSelectedFund(f);
+                          setShowDetailModal(true);
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
                     <div className="row" style={{ marginBottom: 10 }}>
                       <div className="title">
                         <button
@@ -804,11 +827,12 @@ export default function HomePage() {
                     ) : (
                       <div className="muted" style={{ display: collapsedCodes.has(f.code) ? 'none' : 'block' }}>暂无重仓数据</div>
                     )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            </>
+                ))}
+              </div>
+            )}
+          </FundFilters>
           )}
         </div>
       </div>

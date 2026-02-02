@@ -13,86 +13,92 @@
    CSS Variables - shadcn/ui Standard
    ============================================ */
 
-@layer base {
-  :root {
-    /* Radius - 圆角 */
-    --radius: 0.5rem;
+:root {
+  /* Radius - 圆角 */
+  --radius: 0.5rem;
 
-    /* Light Mode - 亮色模式 */
-    --background: 0 0% 100%;           /* oklch(1 0 0) - 纯白 */
-    --foreground: 222.2 84% 4.9%;      /* #0a0a0a - 近乎黑色 */
+  /* Light Mode - 亮色模式 */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 4%;
 
-    --card: 0 0% 100%;                /* 白色卡片 */
-    --card-foreground: 222.2 84% 4.9%; /* 卡片文字 */
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 4%;
 
-    --popover: 0 0% 100%;             /* 弹出层白色背景 */
-    --popover-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 4%;
 
-    --primary: 222.2 47.4% 11.2%;     /* #18181b - 主色调黑 */
-    --primary-foreground: 210 40% 98%; /* #fafafa - 主色文字白 */
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;       /* #f4f4f5 - 次要色浅灰 */
-    --secondary-foreground: 222.2 47.4% 11.2%; /* #18181b */
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
 
-    --muted: 210 40% 96.1%;            /* #f4f4f5 - 静音色浅灰 */
-    --muted-foreground: 215.4 16.3% 46.9%; /* #737373 - 静音文字 */
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
 
-    --accent: 210 40% 96.1%;            /* #f4f4f5 - 强调色浅灰 */
-    --accent-foreground: 222.2 47.4% 11.2%; /* #18181b */
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 84.2% 60.2%;      /* #ef4444 - 红色 */
-    --destructive-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;       /* #e4e4e7 - 边框浅灰 */
-    --input: 214.3 31.8% 91.4%;         /* #e4e4e7 - 输入框边框 */
-    --ring: 222.2 84% 4.9%;             /* #0a0a0a - 焦点环黑 */
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 0 0% 4%;
 
-    /* 图表颜色 */
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  }
+  --danger: 0 84% 60%;
 
-  .dark {
-    /* Dark Mode - 暗色模式 */
-    --background: 222.2 84% 4.9%;      /* #09090b - 近乎黑色背景 */
-    --foreground: 210 40% 98%;          /* #fafafa - 白色文字 */
-
-    --card: 222.2 84% 4.9%;             /* #09090b - 卡片黑 */
-    --card-foreground: 210 40% 98%;     /* #fafafa - 卡片文字白 */
-
-    --popover: 222.2 84% 4.9%;         /* #09090b - 弹出层黑 */
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;             /* #fafafa - 主色调白 */
-    --primary-foreground: 222.2 47.4% 11.2%; /* #18181b - 主色文字黑 */
-
-    --secondary: 217.2 32.6% 17.5%;    /* #27272a - 次要色深灰 */
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;         /* #27272a - 静音色深灰 */
-    --muted-foreground: 215 20.2% 65.1%; /* #a1a1aa - 静音文字 */
-
-    --accent: 217.2 32.6% 17.5%;         /* #27272a - 强调色深灰 */
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;       /* #dc2626 - 深红色 */
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;        /* #27272a - 边框深灰 */
-    --input: 217.2 32.6% 17.5%;          /* #27272a - 输入框边框 */
-    --ring: 212.7 26.8% 83.9%;         /* #d4d4d8 - 焦点环灰 */
-
-    /* 图表颜色 - 暗色模式优化 */
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+  /* 图表颜色 */
+  --chart-1: 25 95% 53%;
+  --chart-2: 217 91% 60%;
+  --chart-3: 158 64% 52%;
+  --chart-4: 262 83% 58%;
+  --chart-5: 330 81% 60%;
 }
+
+.dark {
+  /* Dark Mode - 暗色模式 */
+  --background: 240 10% 4%;
+  --foreground: 0 0% 98%;
+
+  --card: 240 10% 4%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 240 10% 4%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+
+  --secondary: 240 4% 16%;
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 240 4% 16%;
+  --muted-foreground: 240 5% 64%;
+
+  --accent: 240 4% 16%;
+  --accent-foreground: 0 0% 98%;
+
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 4% 16%;
+  --input: 240 4% 16%;
+  --ring: 240 5% 83%;
+
+  --danger: 0 63% 31%;
+
+  /* 图表颜色 - 暗色模式 */
+  --chart-1: 25 95% 53%;
+  --chart-2: 217 91% 60%;
+  --chart-3: 158 64% 52%;
+  --chart-4: 262 83% 58%;
+  --chart-5: 330 81% 60%;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
 
 @layer base {
   * {
@@ -101,422 +107,850 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--background)) 0%,
+      hsl(var(--muted) / 0.3) 50%,
+      hsl(var(--background)) 100%
+    );
+    min-height: 100vh;
+  }
+
+  .dark body {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--background)) 0%,
+      hsl(var(--muted) / 0.1) 50%,
+      hsl(var(--background)) 100%
+    );
   }
 }
 
 /* ============================================
-   Layout Styles - 布局样式
+   Component Styles
    ============================================ */
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  /* Light mode gradient background */
-  background: radial-gradient(1200px 600px at 10% -10%, rgba(96, 165, 250, 0.08), transparent 40%),
-              radial-gradient(1000px 500px at 90% 0%, rgba(34, 211, 238, 0.06), transparent 45%),
-              var(--background);
-}
-
-.dark body {
-  /* Dark mode gradient background */
-  background: radial-gradient(1200px 600px at 10% -10%, rgba(96, 165, 250, 0.03), transparent 40%),
-              radial-gradient(1000px 500px at 90% 0%, rgba(34, 211, 238, 0.02), transparent 45%),
-              var(--background);
-}
-
-.container {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* ============================================
-   Component Styles - 组件样式
-   ============================================ */
-
-/* Glass morphism effect - 玻璃态效果 */
-.glass {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.03) 100%
-  );
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-}
-
-.dark .glass {
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 0, 0, 0.1) 100%
-  );
-}
-
-/* Card component - 卡片组件 */
-.card {
-  @apply bg-card text-card-foreground;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-}
-
-.card:hover {
-  box-shadow: 0 10px 30px -5px rgb(0 0 0 / 0.15);
-}
-
-.card .title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-.card .title span:first-child {
-  white-space: normal;
-  word-break: break-word;
-  overflow: visible;
-  text-overflow: clip;
-  max-width: none;
-}
-
-/* Button styles - 按钮样式 */
-.btn-primary {
-  @apply bg-primary text-primary-foreground hover:opacity-90;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-outline {
-  border: 1px solid var(--border);
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-outline:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
-}
-
-/* Input styles - 输入框样式 */
-.input {
-  @apply bg-background text-foreground;
-  border: 1px solid var(--input);
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius);
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.input:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-/* Utility classes - 工具类 */
-.muted {
-  color: var(--muted-foreground);
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
-
-/* Grid system - 网格系统 */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
-}
-
-.col-12 { grid-column: span 12; }
-.col-6 { grid-column: span 6; }
-.col-4 { grid-column: span 4; }
-.col-3 { grid-column: span 3; }
-
-@media (max-width: 1024px) {
-  .col-6, .col-4, .col-3 {
-    grid-column: span 12;
-  }
-}
-
-/* ============================================
-   Navigation - 导航栏
-   ============================================ */
-
-.navbar {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 50;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-}
-
-.content {
-  padding-top: 100px;
-}
-
-@media (max-width: 640px) {
-  .navbar {
-    top: 8px;
-    left: 8px;
-    right: 8px;
-    padding: 8px 12px;
-  }
-
-  .content {
-    padding-top: 80px;
-  }
-}
-
-/* ============================================
-   AI Chat Component Styles - AI 聊天组件样式
-   ============================================ */
-
-.ai-chat-button {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
-  border: none;
-  color: hsl(var(--primary-foreground));
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 100;
-}
-
-.ai-chat-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-}
-
-.ai-chat-button:active {
-  transform: scale(0.95);
-}
-
-.ai-chat-window {
-  background: hsl(var(--card));
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-/* ============================================
-   Typography - 排版
-   ============================================ */
-
-h1, h2, h3, h4, h5, h6 {
-  @apply text-foreground;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-h1 { font-size: 2.25rem; }
-h2 { font-size: 1.875rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1.125rem; }
-h6 { font-size: 1rem; }
-
-p {
-  @apply text-foreground;
-  line-height: 1.75;
-}
-
-/* ============================================
-   Animation - 动画
-   ============================================ */
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.spin {
-  animation: spin 0.8s linear infinite;
-}
-
-.bounce {
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.slide-in {
-  animation: slideIn 0.3s ease-out;
-}
-
-/* ============================================
-   Scrollbar - 滚动条样式
-   ============================================ */
-
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-muted;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/50;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/70;
-}
-
-/* ============================================
-   Responsive - 响应式
-   ============================================ */
-
-@media (max-width: 640px) {
+@layer components {
+  /* Container */
   .container {
-    padding: 16px;
+    @apply max-w-7xl mx-auto px-6;
   }
 
+  @media (max-width: 640px) {
+    .container {
+      @apply px-4;
+    }
+  }
+
+  /* Content padding */
+  .content {
+    @apply pt-24;
+  }
+
+  /* Glass effect */
+  .glass {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--background) / 0.8) 0%,
+      hsl(var(--background) / 0.6) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    @apply border border-border shadow-lg;
+  }
+
+  .dark .glass {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.6) 0%,
+      hsl(var(--card) / 0.4) 100%
+    );
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Card */
+  .card {
+    @apply bg-card text-card-foreground border border-border rounded-lg shadow-md;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Navbar */
+  .navbar {
+    @apply fixed top-4 left-4 right-4 z-50 px-4 py-3 flex items-center justify-between rounded-xl;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.95) 0%,
+      hsl(var(--card) / 0.85) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .dark .navbar {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.9) 0%,
+      hsl(var(--card) / 0.7) 100%
+    );
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 640px) {
+    .navbar {
+      @apply top-2 left-2 right-2 p-3;
+    }
+  }
+
+  /* Brand */
+  .brand {
+    @apply flex items-center gap-2 font-semibold text-lg;
+  }
+
+  /* Actions */
+  .actions {
+    @apply flex items-center gap-2;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground;
+  }
+
+  .badge-v {
+    @apply flex flex-col items-center px-2 py-1 rounded-md text-xs;
+  }
+
+  .badge.up {
+    @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-400;
+  }
+
+  .dark .badge.up {
+    @apply bg-emerald-500/20;
+  }
+
+  .badge.down {
+    @apply bg-red-500/10 text-red-600 dark:text-red-400;
+  }
+
+  .dark .badge.down {
+    @apply bg-red-500/20;
+  }
+
+  /* Buttons */
+  .button {
+    @apply bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
+  }
+
+  .button:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .icon-button {
+    @apply p-2 rounded-md transition-all hover:bg-accent text-muted-foreground hover:text-foreground border border-transparent hover:border-border;
+  }
+
+  .icon-button.danger {
+    @apply hover:bg-destructive/10 hover:text-destructive;
+  }
+
+  .icon-button.active {
+    @apply text-accent bg-accent/20 border-accent/30;
+  }
+
+  /* Filter button */
+  button.filter-button,
+  .fund-filters button {
+    @apply bg-muted/50 hover:bg-muted border border-border transition-all;
+  }
+
+  .fund-filters button.active {
+    @apply bg-accent text-accent-foreground border-accent;
+  }
+
+  /* Form elements */
+  .form {
+    @apply flex gap-2;
+  }
+
+  .input {
+    @apply bg-background/80 text-foreground border border-input px-3 py-2 rounded-md outline-none transition-all focus:ring-2 focus:ring-ring focus:ring-offset-2 backdrop-blur-sm;
+  }
+
+  .dark .input {
+    @apply bg-background/60;
+  }
+
+  .form-group {
+    @apply flex flex-col gap-2;
+  }
+
+  /* Chips */
+  .chips {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .chip {
+    @apply px-3 py-1.5 rounded-md text-sm font-medium transition-all border border-border hover:bg-accent;
+  }
+
+  .chip.active {
+    @apply bg-primary text-primary-foreground border-primary;
+  }
+
+  /* Tabs */
+  .tabs {
+    @apply flex gap-2;
+  }
+
+  .tab {
+    @apply px-4 py-2 rounded-md text-sm font-medium transition-all border border-border hover:bg-accent text-muted-foreground;
+  }
+
+  .tab.active {
+    @apply bg-primary text-primary-foreground border-primary;
+  }
+
+  /* Grid system */
   .grid {
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1rem;
   }
-}
 
-/* ============================================
-   Print Styles - 打印样式
-   ============================================ */
+  .col-12 {
+    @apply col-span-12;
+  }
 
-@media print {
-  .navbar,
-  .ai-chat-button,
+  .col-6 {
+    @apply col-span-6;
+  }
+
+  .col-4 {
+    @apply col-span-4;
+  }
+
+  .col-3 {
+    @apply col-span-3;
+  }
+
+  @media (max-width: 1024px) {
+    .col-6,
+    .col-4,
+    .col-3 {
+      @apply col-span-12;
+    }
+  }
+
+  /* Row */
+  .row {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  /* Stat */
+  .stat {
+    @apply flex flex-col items-center gap-2 p-4 rounded-lg bg-muted/40 border border-border/50 transition-all hover:bg-muted/50;
+  }
+
+  .dark .stat {
+    @apply bg-muted/15 hover:bg-muted/25;
+  }
+
+  .stat .label {
+    @apply text-xs text-muted-foreground font-medium tracking-wide;
+  }
+
+  .stat .value {
+    @apply text-xl font-bold tracking-tight;
+  }
+
+  .stat .value.up {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .stat .value.down {
+    @apply text-red-600 dark:text-red-400;
+  }
+
+  /* Fund card */
+  .fund-card {
+    @apply p-4 transition-all hover:shadow-lg cursor-pointer;
+  }
+
+  /* List */
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .list.collapsed {
+    @apply hidden;
+  }
+
+  .list .item {
+    @apply flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm;
+  }
+
+  .list .item .name {
+    @apply font-medium truncate;
+  }
+
+  .list .item .values {
+    @apply flex items-center gap-1;
+  }
+
+  .list .item .weight {
+    @apply text-xs text-muted-foreground;
+  }
+
+  /* Favorite button */
+  .fav-button {
+    @apply transition-all;
+  }
+
+  .fav-button.active {
+    @apply text-accent;
+  }
+
+  /* Empty state */
+  .empty {
+    @apply py-12 text-center text-muted-foreground;
+  }
+
+  /* Footer */
+  .footer {
+    @apply mt-8 py-6 text-center text-sm text-muted-foreground border-t border-border;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4;
+  }
+
+  .modal {
+    @apply w-full max-w-lg p-6 shadow-xl;
+  }
+
+  /* Loading bar */
+  .loading-bar {
+    @apply absolute top-0 left-0 right-0 h-0.5 bg-primary overflow-hidden;
+  }
+
+  .loading-bar::after {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-full bg-primary-foreground;
+    animation: loading 1.5s infinite;
+  }
+
+  @keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Add fund section */
+  .add-fund-section {
+    @apply p-4;
+  }
+
+  /* Search results */
+  .search-results {
+    @apply fixed z-50 w-full max-w-md bg-card border border-border rounded-lg shadow-lg p-2 max-h-96 overflow-y-auto;
+  }
+
+  .search-result-item {
+    @apply flex items-center justify-between p-3 rounded-md hover:bg-accent cursor-pointer transition-all;
+  }
+
+  .search-result-info {
+    @apply flex flex-col gap-1;
+  }
+
+  .search-result-name {
+    @apply font-medium;
+  }
+
+  .search-result-added {
+    @apply text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted;
+  }
+
+  .search-results-empty {
+    @apply p-4 text-center text-muted-foreground;
+  }
+
+  /* Muted text */
+  .muted {
+    @apply text-muted-foreground;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  h3 {
+    @apply text-lg;
+  }
+
+  h4 {
+    @apply text-base;
+  }
+
+  /* Strong/bold text */
+  strong, b {
+    @apply font-semibold;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary hover:underline transition-all;
+  }
+
+  /* Improved focus styles */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Fund Filters specific styles */
+  .fund-filters {
+    @apply mb-4;
+  }
+
+  .filters-toolbar {
+    @apply flex items-center justify-between gap-4 p-3;
+  }
+
+  .filters-left,
+  .filters-right {
+    @apply flex items-center gap-2;
+  }
+
+  .filter-button {
+    @apply px-3 py-2 rounded-md text-sm font-medium transition-all border border-border;
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--foreground));
+  }
+
+  .filter-button:hover {
+    background: hsl(var(--muted) / 0.7);
+  }
+
+  .filter-button.active {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+  }
+
+  .filter-badge {
+    @apply ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold bg-accent text-accent-foreground;
+  }
+
+  .filter-menu {
+    @apply absolute top-full left-0 mt-2 z-50 min-w-[200px] bg-card border border-border rounded-lg shadow-lg p-2;
+  }
+
+  .filter-menu-header {
+    @apply px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider;
+  }
+
+  .filter-option {
+    @apply w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-all hover:bg-accent text-left;
+  }
+
+  .filter-option.selected {
+    @apply bg-accent text-accent-foreground font-medium;
+  }
+
+  .filter-icon {
+    @apply w-6 h-6 flex items-center justify-center rounded bg-muted text-xs font-bold;
+  }
+
+  .check-mark {
+    @apply ml-auto text-xs font-bold text-accent;
+  }
+
+  .active-filter-tag {
+    @apply flex items-center gap-1 px-2 py-1 rounded-md text-sm bg-accent text-accent-foreground;
+  }
+
+  .clear-filter {
+    @apply p-0.5 rounded hover:bg-accent-foreground/10 transition-all;
+  }
+
+  .sort-select {
+    @apply px-3 py-2 rounded-md text-sm border border-border bg-background text-foreground transition-all;
+  }
+
+  .sort-select:focus {
+    @apply ring-2 ring-ring;
+  }
+
+  .result-count {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .filter-overlay {
+    @apply fixed inset-0 z-40;
+  }
+
+  /* Portfolio Stats Component Styles */
+  .portfolio-stats {
+    @apply w-full;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    @apply grid grid-cols-2 md:grid-cols-4 gap-3 mb-6;
+  }
+
+  .stat-card {
+    @apply flex flex-col items-center justify-center p-4 rounded-lg bg-muted/30 border border-border/50 transition-all hover:bg-muted/40;
+  }
+
+  .dark .stat-card {
+    @apply bg-muted/15 hover:bg-muted/25;
+  }
+
+  .stat-label {
+    @apply text-xs text-muted-foreground font-medium tracking-wide mb-1;
+  }
+
+  .stat-value {
+    @apply text-xl font-bold tracking-tight mb-1;
+  }
+
+  .stat-value.positive {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .stat-value.negative {
+    @apply text-red-600 dark:text-red-400;
+  }
+
+  .stat-unit {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .stat-distribution {
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .stat-distribution .up {
+    @apply text-emerald-600 dark:text-emerald-400 font-medium;
+  }
+
+  .stat-distribution .flat {
+    @apply text-muted-foreground;
+  }
+
+  .stat-distribution .down {
+    @apply text-red-600 dark:text-red-400 font-medium;
+  }
+
+  /* Charts Grid */
+  .charts-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 mb-6;
+  }
+
+  .chart-card {
+    @apply p-4 rounded-lg bg-muted/20 border border-border/50;
+  }
+
+  .dark .chart-card {
+    @apply bg-muted/10;
+  }
+
+  .chart-card h4 {
+    @apply text-sm font-semibold tracking-tight mb-3;
+  }
+
+  .chart-container {
+    @apply flex items-center justify-center;
+  }
+
+  .pie-container {
+    @apply relative;
+  }
+
+  .pie-legend {
+    @apply flex flex-wrap gap-2 mt-3;
+  }
+
+  .legend-item {
+    @apply flex items-center gap-1.5 text-xs;
+  }
+
+  .legend-color {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .legend-label {
+    @apply text-muted-foreground;
+  }
+
+  .legend-value {
+    @apply font-medium;
+  }
+
+  /* Type Stats */
+  .type-stats {
+    @apply p-4 rounded-lg bg-muted/20 border border-border/50;
+  }
+
+  .dark .type-stats {
+    @apply bg-muted/10;
+  }
+
+  .type-stats h4 {
+    @apply text-sm font-semibold tracking-tight mb-3;
+  }
+
+  .type-stats-list {
+    @apply space-y-2;
+  }
+
+  .type-stat-item {
+    @apply flex items-center justify-between p-2 rounded-md bg-muted/30 transition-all hover:bg-muted/40;
+  }
+
+  .dark .type-stat-item {
+    @apply bg-muted/15 hover:bg-muted/25;
+  }
+
+  .type-name {
+    @apply text-sm font-medium;
+  }
+
+  .type-count {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .type-change {
+    @apply text-sm font-semibold;
+  }
+
+  .type-change.positive {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .type-change.negative {
+    @apply text-red-600 dark:text-red-400;
+  }
+
+  /* Empty State */
+  .portfolio-stats-empty {
+    @apply py-12 text-center text-muted-foreground;
+  }
+
+  /* SVG Charts */
+  .stats-chart,
+  .pie-chart {
+    @apply w-full h-auto;
+  }
+
+  /* AI Chat Component Styles */
+  .ai-chat-container {
+    @apply fixed bottom-4 right-4 z-50;
+  }
+
+  .ai-chat-button {
+    @apply w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.7));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .ai-chat-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
   .ai-chat-window {
-    display: none !important;
+    @apply w-full max-w-lg shadow-2xl overflow-hidden;
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
   }
 
-  body {
-    background: white !important;
-    color: black !important;
+  .ai-chat-header {
+    @apply flex items-center justify-between p-4 border-b border-border;
+    background: linear-gradient(135deg, hsl(var(--card) / 0.5), hsl(var(--card) / 0.3));
+  }
+
+  .ai-chat-messages {
+    @apply h-96 overflow-y-auto p-4 space-y-4;
+  }
+
+  .ai-chat-message {
+    @apply max-w-[85%] p-3 rounded-lg;
+  }
+
+  .ai-chat-message.user {
+    @apply ml-auto bg-primary text-primary-foreground;
+  }
+
+  .ai-chat-message.assistant {
+    @apply mr-auto bg-muted text-foreground;
+  }
+
+  .ai-chat-input-area {
+    @apply p-4 border-t border-border;
+  }
+
+  .ai-chat-input {
+    @apply w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring;
+  }
+
+  .ai-chat-send-button {
+    @apply px-4 py-2 rounded-lg bg-primary text-primary-foreground;
+    @apply hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* AI Chat Suggestion Buttons */
+  .ai-suggestion-button {
+    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm;
+    background: hsl(var(--muted) / 0.5);
+    border: 1px solid hsl(var(--border));
+    transition: all 0.2s ease;
+  }
+
+  .ai-suggestion-button:hover {
+    background: hsl(var(--muted) / 0.8);
+    border-color: hsl(var(--primary));
+  }
+
+  /* AI Chat Analysis Result Styles */
+  .analysis-result {
+    @apply p-4 rounded-lg bg-muted/30 border border-border/50;
+  }
+
+  .analysis-result .score {
+    @apply text-2xl font-bold;
+  }
+
+  .analysis-result .score.high {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .analysis-result .score.medium {
+    @apply text-yellow-600 dark:text-yellow-400;
+  }
+
+  .analysis-result .score.low {
+    @apply text-red-600 dark:text-red-400;
+  }
+
+  .analysis-result .theory-item {
+    @apply p-3 rounded-md bg-muted/20 mb-2;
+  }
+
+  .analysis-result .theory-name {
+    @apply font-semibold mb-1;
+  }
+
+  .analysis-result .theory-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .analysis-result .recommendation {
+    @apply mt-3 p-3 rounded-md bg-accent/20 border border-accent/30;
+  }
+
+  /* Research Result Styles */
+  .research-result {
+    @apply space-y-4;
+  }
+
+  .research-item {
+    @apply p-3 rounded-lg bg-muted/20 border border-border/50;
+  }
+
+  .research-item-title {
+    @apply font-medium mb-1;
+  }
+
+  .research-item-meta {
+    @apply text-xs text-muted-foreground mb-2;
+  }
+
+  .research-item-summary {
+    @apply text-sm;
+  }
+
+  /* Workflow Progress Styles */
+  .workflow-progress {
+    @apply space-y-2;
+  }
+
+  .workflow-step {
+    @apply flex items-start gap-3 p-3 rounded-lg;
+  }
+
+  .workflow-step.pending {
+    @apply bg-muted/20;
+  }
+
+  .workflow-step.active {
+    @apply bg-accent/10 border border-accent/30;
+  }
+
+  .workflow-step.completed {
+    @apply bg-emerald-500/10 border border-emerald-500/30;
+  }
+
+  .workflow-step-icon {
+    @apply w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0;
+  }
+
+  .workflow-step-content {
+    @apply flex-1;
+  }
+
+  .workflow-step-title {
+    @apply font-medium text-sm;
+  }
+
+  .workflow-step-description {
+    @apply text-xs text-muted-foreground mt-1;
   }
 }
 
 /* ============================================
-   Selection - 选中样式
+   Utilities
    ============================================ */
 
-::selection {
-  @apply bg-primary text-primary-foreground;
-}
+@layer utilities {
+  .spin {
+    animation: spin 1s linear infinite;
+  }
 
-::-moz-selection {
-  @apply bg-primary text-primary-foreground;
-}
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
-/* ============================================
-   Focus Visible - 焦点样式
-   ============================================ */
-
-:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
-
-/* ============================================
-   Transition - 过渡效果
-   ============================================ */
-
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  .text-balance {
+    text-wrap: balance;
+  }
 }

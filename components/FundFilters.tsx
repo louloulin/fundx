@@ -4,26 +4,28 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface FundFiltersProps {
   funds: any[];
-  onFilteredFundsChange: (funds: any[]) => void;
+  children: (filteredFunds: any[]) => React.ReactNode;
 }
 
 type SortOption = 'default' | 'nameAsc' | 'nameDesc' | 'navDesc' | 'navAsc' | 'changeDesc' | 'changeAsc';
 type FilterType = 'all' | 'stock' | 'bond' | 'mixed' | 'index' | 'money';
 
-export function FundFilters({ funds, onFilteredFundsChange }: FundFiltersProps) {
+export function FundFilters({ funds, children }: FundFiltersProps) {
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
 
-  useEffect(() => {
-    let filtered = [...funds];
+  // 计算筛选和排序后的基金
+  const getFilteredFunds = () => {
+    let result = [...funds];
 
+    // 应用类型筛选
     if (filterType !== 'all') {
-      filtered = filtered.filter(f => {
+      result = result.filter(f => {
         const type = (f.type || '').toLowerCase();
         switch (filterType) {
           case 'stock':
@@ -42,32 +44,34 @@ export function FundFilters({ funds, onFilteredFundsChange }: FundFiltersProps) 
       });
     }
 
+    // 应用排序
     switch (sortBy) {
       case 'nameAsc':
-        filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-CN'));
+        result.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-CN'));
         break;
       case 'nameDesc':
-        filtered.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'zh-CN'));
+        result.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'zh-CN'));
         break;
       case 'navDesc':
-        filtered.sort((a, b) => parseFloat(b.dwjz || b.gsz || 0) - parseFloat(a.dwjz || a.gsz || 0));
+        result.sort((a, b) => parseFloat(b.dwjz || b.gsz || 0) - parseFloat(a.dwjz || a.gsz || 0));
         break;
       case 'navAsc':
-        filtered.sort((a, b) => parseFloat(a.dwjz || a.gsz || 0) - parseFloat(b.dwjz || b.gsz || 0));
+        result.sort((a, b) => parseFloat(a.dwjz || a.gsz || 0) - parseFloat(b.dwjz || b.gsz || 0));
         break;
       case 'changeDesc':
-        filtered.sort((a, b) => (Number(b.gszzl) || 0) - (Number(a.gszzl) || 0));
+        result.sort((a, b) => (Number(b.gszzl) || 0) - (Number(a.gszzl) || 0));
         break;
       case 'changeAsc':
-        filtered.sort((a, b) => (Number(a.gszzl) || 0) - (Number(b.gszzl) || 0));
+        result.sort((a, b) => (Number(a.gszzl) || 0) - (Number(b.gszzl) || 0));
         break;
       default:
         break;
     }
 
-    onFilteredFundsChange(filtered);
-  }, [funds, filterType, sortBy, onFilteredFundsChange]);
+    return result;
+  };
 
+  const filteredFunds = getFilteredFunds();
   const sortOptions = [
     { value: 'default', label: '默认' },
     { value: 'nameAsc', label: '名称A-Z' },
@@ -90,72 +94,74 @@ export function FundFilters({ funds, onFilteredFundsChange }: FundFiltersProps) 
   const activeFilterCount = (filterType !== 'all' ? 1 : 0) + (sortBy !== 'default' ? 1 : 0);
 
   return (
-    <div className="fund-filters">
-      <div className="filters-toolbar">
-        <div className="filters-left">
-          <div className="filter-dropdown" style={{ position: 'relative' }}>
-            <button
-              className={`filter-button ${filterType !== 'all' ? 'active' : ''}`}
-              onClick={() => setShowFilterMenu(!showFilterMenu)}
-            >
-              <span>Filter</span>
-              {activeFilterCount > 0 && (
-                <span className="filter-badge">{activeFilterCount}</span>
-              )}
-            </button>
+    <>
+      <div className="fund-filters">
+        <div className="filters-toolbar">
+          <div className="filters-left">
+            <div className="filter-dropdown" style={{ position: 'relative' }}>
+              <button
+                className={`filter-button ${filterType !== 'all' ? 'active' : ''}`}
+                onClick={() => setShowFilterMenu(!showFilterMenu)}
+              >
+                <span>Filter</span>
+                {activeFilterCount > 0 && (
+                  <span className="filter-badge">{activeFilterCount}</span>
+                )}
+              </button>
 
-            {showFilterMenu && (
-              <div className="filter-menu">
-                <div className="filter-menu-header">类型</div>
-                {filterOptions.map(option => (
-                  <button
-                    key={option.value}
-                    className={`filter-option ${filterType === option.value ? 'selected' : ''}`}
-                    onClick={() => {
-                      setFilterType(option.value as FilterType);
-                      setShowFilterMenu(false);
-                    }}
-                  >
-                    <span className="filter-icon">{option.icon}</span>
-                    <span>{option.label}</span>
-                    {filterType === option.value && (
-                      <span className="check-mark">OK</span>
-                    )}
-                  </button>
-                ))}
+              {showFilterMenu && (
+                <div className="filter-menu">
+                  <div className="filter-menu-header">类型</div>
+                  {filterOptions.map(option => (
+                    <button
+                      key={option.value}
+                      className={`filter-option ${filterType === option.value ? 'selected' : ''}`}
+                      onClick={() => {
+                        setFilterType(option.value as FilterType);
+                        setShowFilterMenu(false);
+                      }}
+                    >
+                      <span className="filter-icon">{option.icon}</span>
+                      <span>{option.label}</span>
+                      {filterType === option.value && (
+                        <span className="check-mark">OK</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {filterType !== 'all' && (
+              <div className="active-filter-tag">
+                <span>{filterOptions.find(o => o.value === filterType)?.label}</span>
+                <button
+                  className="clear-filter"
+                  onClick={() => setFilterType('all')}
+                >
+                  X
+                </button>
               </div>
             )}
           </div>
 
-          {filterType !== 'all' && (
-            <div className="active-filter-tag">
-              <span>{filterOptions.find(o => o.value === filterType)?.label}</span>
-              <button
-                className="clear-filter"
-                onClick={() => setFilterType('all')}
-              >
-                X
-              </button>
-            </div>
-          )}
-        </div>
+          <div className="filters-right">
+            <select
+              className="sort-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+            >
+              {sortOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
 
-        <div className="filters-right">
-          <select
-            className="sort-select"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-          >
-            {sortOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-
-          <span className="result-count">
-            Total: <strong>{funds.length}</strong>
-          </span>
+            <span className="result-count">
+              Total: <strong>{filteredFunds.length}</strong>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -165,7 +171,10 @@ export function FundFilters({ funds, onFilteredFundsChange }: FundFiltersProps) 
           onClick={() => setShowFilterMenu(false)}
         />
       )}
-    </div>
+
+      {/* 渲染子组件，传入筛选后的基金 */}
+      {children(filteredFunds)}
+    </>
   );
 }
 

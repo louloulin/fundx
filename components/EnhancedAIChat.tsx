@@ -1,11 +1,20 @@
 /**
  * Enhanced AI Chat Component
  *
- * 增强版 AI 聊天组件，支持：
- * - Mastra Agent 工具调用
+ * 真正的 Mastra 框架实现 - 基于 Mastra Core + GLM
+ *
+ * 特性：
+ * - 使用 Mastra Agent 的 stream() 方法
+ * - 支持工具调用 (searchFunds, analyzePortfolio, etc.)
  * - Markdown 渲染
  * - 智能建议
  * - 聊天历史管理
+ *
+ * 架构：
+ * - UI 层: EnhancedAIChat.tsx (React 组件)
+ * - API 层: /api/ai/mastra-stream (使用 Mastra Agent.stream())
+ * - Agent 层: lib/mastra/agents/fund-advisor.ts (Mastra Agent)
+ * - 工具层: lib/mastra/agents/fund-advisor.ts (7个分析工具)
  */
 
 'use client';
@@ -109,8 +118,8 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
     };
 
     try {
-      // 调用流式 AI API
-      const response = await fetch('/api/ai/agent-chat-stream', {
+      // 调用真正的 Mastra Streaming API (基于 Mastra 框架的 Agent.stream() 方法)
+      const response = await fetch('/api/ai/mastra-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -162,12 +171,20 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
                 break;
 
               case 'tool_start':
-                // 工具执行开始，显示提示
-                aiMessage.content += `\n🔧 正在调用${data.tool_name === 'searchFunds' ? '基金搜索' : data.tool_name === 'analyzePortfolio' ? '组合分析' : '市场概况'}工具...\n`;
+                // 工具执行开始 - 设置工具调用状态，不修改 content
+                aiMessage.tool_calls = [...(aiMessage.tool_calls || []), {
+                  name: data.tool_name,
+                  status: 'running'
+                }];
                 break;
 
               case 'tool_result':
-                // 工具执行完成
+                // 工具执行完成 - 更新工具状态
+                if (aiMessage.tool_calls) {
+                  aiMessage.tool_calls = aiMessage.tool_calls.map(tc =>
+                    tc.name === data.tool_name ? { ...tc, status: 'completed' } : tc
+                  );
+                }
                 break;
 
               case 'content':
@@ -537,7 +554,7 @@ export function EnhancedAIChat({ funds = [] }: EnhancedAIChatProps) {
               </div>
               <div>
                 <div style={{ fontWeight: 600, color: '#e5e7eb' }}>AI 投资顾问</div>
-                <div style={{ fontSize: '12px', color: '#9ca3af' }}>增强版 - 支持工具调用</div>
+                <div style={{ fontSize: '12px', color: '#22d3ee' }}>Mastra + GLM 框架</div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
