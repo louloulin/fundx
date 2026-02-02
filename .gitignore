@@ -80,3 +80,9 @@ fabric.properties
 /node_modules/
 /.next/
 .vercel
+
+# Environment variables
+.env
+.env*.local
+.env.production
+.env.development
