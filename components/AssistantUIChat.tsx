@@ -3,11 +3,14 @@
  *
  * 基于 assistant-ui + Mastra 的简化实现
  * 使用基本的流式响应和状态管理
+ * 集成增强的 Markdown 渲染功能
  */
 
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { MarkdownRenderer, StreamingMarkdownRenderer } from './EnhancedMarkdownRenderer';
+import '@/app/markdown-styles.css';
 
 interface FundData {
   code: string;
@@ -241,10 +244,18 @@ export function AssistantUIChat({ funds = [] }: AssistantUIChatProps) {
                     className={`max-w-[80%] rounded-lg px-4 py-2 ${
                       message.role === 'user'
                         ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-foreground'
+                        : 'bg-transparent'
                     }`}
                   >
-                    <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                    {/* 用户消息使用纯文本，助手消息使用 Markdown 渲染 */}
+                    {message.role === 'user' ? (
+                      <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                    ) : (
+                      <StreamingMarkdownRenderer
+                        content={message.content}
+                        isStreaming={isLoading && message.id === messages[messages.length - 1]?.id}
+                      />
+                    )}
                     <div className="text-xs opacity-70 mt-1">
                       {new Date(message.timestamp).toLocaleTimeString()}
                     </div>
@@ -433,10 +444,19 @@ export function FullScreenAssistantUIChat({ funds = [] }: AssistantUIChatProps) 
                 className={`max-w-[80%] rounded-lg px-4 py-2 ${
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground'
+                    : 'bg-transparent'
                 }`}
               >
-                {message.content}
+                {message.role === 'user' ? (
+                  <div>{message.content}</div>
+                ) : (
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <StreamingMarkdownRenderer
+                      content={message.content}
+                      isStreaming={isLoading && message.id === messages[messages.length - 1]?.id}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}

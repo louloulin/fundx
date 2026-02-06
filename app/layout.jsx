@@ -1,5 +1,6 @@
 import Script from 'next/script';
 import './globals.css';
+import './markdown-styles.css';
 import { ThemeProvider } from '../lib/theme/theme-context';
 
 export const metadata = {
