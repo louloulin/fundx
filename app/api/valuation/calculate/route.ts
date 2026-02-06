@@ -25,7 +25,7 @@ async function getFundNav(fundCode: string) {
       const text = await response.text();
 
       // 解析返回的数据
-      const match = text.match(/var apidata=\{ content:"<table[^>]*>.*?<tr>.*?<td>([\d-]+)<\/td>.*?<td class='tor bold'>([\d.]+)<\/td>.*?<td class='tor bold'>([\d.]+)<\/td>.*?<td class='tor bold[^']*'>([^<]+)<\/td>/s);
+      const match = text.match(/var apidata=\{ content:"<table[^>]*>[\s\S]*?<tr>[\s\S]*?<td>([\d-]+)<\/td>[\s\S]*?<td class='tor bold'>([\d.]+)<\/td>[\s\S]*?<td class='tor bold'>([\d.]+)<\/td>[\s\S]*?<td class='tor bold[^']*'>([^<]+)<\/td>/);
 
       if (match) {
         return {

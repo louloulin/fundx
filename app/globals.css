@@ -228,19 +228,19 @@
   }
 
   .badge.up {
-    @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-400;
-  }
-
-  .dark .badge.up {
-    @apply bg-emerald-500/20;
-  }
-
-  .badge.down {
     @apply bg-red-500/10 text-red-600 dark:text-red-400;
   }
 
-  .dark .badge.down {
+  .dark .badge.up {
     @apply bg-red-500/20;
+  }
+
+  .badge.down {
+    @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-400;
+  }
+
+  .dark .badge.down {
+    @apply bg-emerald-500/20;
   }
 
   /* Buttons */
@@ -371,11 +371,11 @@
   }
 
   .stat .value.up {
-    @apply text-emerald-600 dark:text-emerald-400;
+    @apply text-red-600 dark:text-red-400;
   }
 
   .stat .value.down {
-    @apply text-red-600 dark:text-red-400;
+    @apply text-emerald-600 dark:text-emerald-400;
   }
 
   /* Fund card */
@@ -692,7 +692,7 @@
   }
 
   .stat-distribution .up {
-    @apply text-emerald-600 dark:text-emerald-400 font-medium;
+    @apply text-red-600 dark:text-red-400 font-medium;
   }
 
   .stat-distribution .flat {
@@ -700,7 +700,7 @@
   }
 
   .stat-distribution .down {
-    @apply text-red-600 dark:text-red-400 font-medium;
+    @apply text-emerald-600 dark:text-emerald-400 font-medium;
   }
 
   /* Charts Grid */
